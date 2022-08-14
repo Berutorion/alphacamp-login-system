@@ -1,6 +1,7 @@
 const express = require("express");
 const { engine } = require("express-handlebars");
-const User = require("./models/user");
+const cookieParser = require("cookie-parser");
+const routers = require("./routes/index");
 const app = express();
 
 const port = 3000;
@@ -11,22 +12,9 @@ app.set("view engine", ".hbs");
 app.set("views", "./views");
 //body-parser
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use("/", routers);
 
 app.listen(port, () => {
   console.log(`Express server is working on http://localhost:${port}`);
-});
-
-app.get("/", (req, res) => {
-  res.render("login");
-});
-
-app.post("/", (req, res) => {
-  const { email, password } = req.body;
-  const user = User.find((user) => email === user.email);
-
-  user
-    ? user.password === password
-      ? res.render("profile", { firstName: user.firstName })
-      : res.render("login", { message: "email of password is wrong" })
-    : res.render("login", { message: "email of password is wrong" });
 });
